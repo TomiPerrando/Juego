@@ -1,5 +1,9 @@
-scale = 4.5
 Enemies = require "enemies"
+anim8 = require 'libraries.anim8'
+sti = require 'libraries.sti'
+bf = require 'libraries.breezefield'
+
+scale = 4.5
 
 local function drawHPBar(x, y, w, h, hp, hpMax)
     -- fondo gris
@@ -16,46 +20,39 @@ end
 
 
 function love.load()
-    love.graphics.setDefaultFilter("nearest", "nearest")
 
-    anim8 = require 'libraries/anim8'
-    sti = require 'libraries/sti'
-    wf = require 'libraries.windfield'
-    
+    -------- Configs --------
 
+    love.graphics.setDefaultFilter("nearest", "nearest") -- No suavizar imagenes
+    gameMap = sti('maps/base_arena.lua')                 -- Carga el mapa
 
-    gameMap = sti('maps/base_arena.lua')
+    -------- Physics  --------
 
-    -- Crear mundo de colisiones
-    world = wf.newWorld(0, 0)
+    world = bf.newWorld(0, 0)
+    --world:setQueryDebugDrawing(true) -- podés quitar esto luego, es útil para debug
 
-    world:addCollisionClass('Player')   -- solo crea la clase
-    world:addCollisionClass('Enemy')    -- crea la segunda
-    world:addCollisionClass('Attack')  
+    ---- Walls ----
 
-    --world:on('Attack', 'Enemy', function(attackFixture, enemyFixture, col)
-
-
-
-    Enemies.load(world)
-    world:setQueryDebugDrawing(true) -- podés quitar esto luego, es útil para debug
-
-    -- Crear colisiones en los bordes
     walls = {}
-    walls.top = world:newRectangleCollider(0, -50, 1920, 50)
-    walls.bottom = world:newRectangleCollider(0, 1088, 1920, 50)
-    walls.left = world:newRectangleCollider(-50, 0, 50, 1088)
-    walls.right = world:newRectangleCollider(1920, 0, 50, 1088)
+    walls.top    = world:newCollider("Rectangle",{0,   -50, 1920, 50})
+    walls.bottom = world:newCollider("Rectangle",{0,  1088, 1920, 50})
+    walls.left   = world:newCollider("Rectangle",{-50,   0,   50, 1088})
+    walls.right  = world:newCollider("Rectangle",{1920,  0,   50, 1088})
+
     for _, wall in pairs(walls) do
-        wall:setType('static')
+        wall:setType("static")      -- inmóviles
     end
 
-    -- Personaje
+    -------- Main Entities --------
+    
+    ---- Player ----
+
     player = {}
     player.x = 400
     player.y = 200
     player.speed = 300
     player.hp = 300
+    player.current_hp = 300
     player.spriteSheet = love.graphics.newImage('sprites/player-sheet.png')
     player.grid = anim8.newGrid(12, 18, player.spriteSheet:getWidth(), player.spriteSheet:getHeight())
 
@@ -66,14 +63,26 @@ function love.load()
     player.animations.up = anim8.newAnimation(player.grid('1-4', 4), 0.2)
     player.anim = player.animations.left
 
-    player.collider = world:newBSGRectangleCollider(player.x, player.y, 10 * scale, 16 * scale, 14)
+    player.collider = world:newCollider("Rectangle",{player.x, player.y, 10 * scale, 16 * scale, 14})
     player.collider:setFixedRotation(true)
+    player.attackHitbox = nil -- Requerido por el ataque
 
-        -- HP
-    Enemies.dummy.hpMax = 100      -- guardo max para dibujar la barra
-    Enemies.dummy.hp    = Enemies.dummy.hpMax
 
-    -- Arma cuerpo-a-cuerpo muy simple
+    ---- Player Functions----
+
+    function player:getAngleToMouse()
+    local mouseX, mouseY = love.mouse.getPosition()
+    local dx = mouseX - self.x
+    local dy = mouseY - self.y
+    return math.atan2(dy, dx)
+    end
+
+    ---- Starting Enemies ----
+
+    Enemies.spawn("dummy", 1000, 400, world)
+
+    ---- Simple weapon ----
+
     player.weapon = {
         range    = 60,    -- píxeles
         damage   = 15,
@@ -85,6 +94,11 @@ end
 
 
 function love.update(dt)
+
+    -------- Player Movement --------
+
+    ---- Definitions ----
+    
     local isMoving = false
     local vx, vy = 0, 0
 
@@ -108,16 +122,18 @@ function love.update(dt)
         player.anim = player.animations.up
         isMoving = true
     end
-
         
+    ---- Diagonal movement ----
+
     local len = math.sqrt(vx^2 + vy^2)
     if len > 0 then
         vx = (vx / len) * player.speed
         vy = (vy / len) * player.speed
     end
 
-    player.collider:setLinearVelocity(vx, vy)   
+    ---- Collider-based movement ----
 
+    player.collider:setLinearVelocity(vx, vy)   
 
     player.x = player.collider:getX()
     player.y = player.collider:getY()
@@ -126,93 +142,112 @@ function love.update(dt)
         player.anim:gotoFrame(2)
     end
 
--- ===== Cool-down usual =====
-if not player.canAttack then
-    player.attackTime = player.attackTime - dt
-    if player.attackTime <= 0 then player.canAttack = true end
-end
+    -------- Player Attack --------
 
-    player.anim:update(dt)
+    ---- CoolDown ----
+
+    if not player.canAttack then
+        player.attackTime = player.attackTime - dt
+        if player.attackTime <= 0 then player.canAttack = true end
+    end
+
+    ---- Atack on click ----
+
+    if love.mouse.isDown(1) and player.canAttack then
+        local angle = player:getAngleToMouse()
+        local offset = player.weapon.range
+        local hitboxX = player.x + math.cos(angle) * offset
+        local hitboxY = player.y + math.sin(angle) * offset
+
+        local hitboxWidth  = 20
+        local hitboxHeight = 20
+
+        local hitbox = world:newCollider("Rectangle",{hitboxX, hitboxY, hitboxWidth, hitboxHeight})
+        hitbox:setType("dynamic")
+        hitbox.identity = "PlayerAttack"
+        hitbox.life = 0.1 -- segundos que dura el hitbox
+
+        function hitbox:enter(other, contact)
+            if other.identity == "Enemy" then
+                local enemy = other.parent     
+                if enemy and enemy.current_hp then
+                    enemy.current_hp = math.max(
+                        0, enemy.current_hp - player.weapon.damage)
+                    print("¡Golpe!", enemy.current_hp .. " HP restante")
+                end
+            end
+        end
+        player.attackHitbox = hitbox
+        player.attackAngle = angle
+        player.canAttack = false
+        player.attackTime = player.weapon.cooldown
+    end
+
     world:update(dt)
+    player.anim:update(dt)
 
--- ===== Vida del hitbox + chequeo de colisión =====
-if player.currentHitbox and not player.currentHitbox:isDestroyed() then
-    local hb = player.currentHitbox
-    hb.life = hb.life - dt
-    if hb:enter('Enemy') then                -- ← AQUÍ aplicamos daño
-        local d = Enemies.dummy
-        if d.hp > 0 then
-            d.hp = math.max(0, d.hp - player.weapon.damage)
-            print('Hit! HP dummy:', d.hp)
+    -------- Collitions check --------
+
+    if player.attackHitbox and not player.attackHitbox:isDestroyed() then
+        local hitbox = player.attackHitbox
+        hitbox.life = hitbox.life - dt
+
+        if hitbox.life <= 0 then
+            hitbox:destroy()
+            player.attackHitbox = nil
         end
     end
-    if hb.life <= 0 then hb:destroy() end
-end
 end
 
-function love.mousepressed(mx, my, button)
-    if button ~= 1 or not player.canAttack then return end   -- solo click izq
-
-    player.canAttack  = false
-    player.attackTime = player.weapon.cooldown
-
-    -- 1️⃣  dirección del jugador al puntero
-    local dx = mx - player.x
-    local dy = my - player.y
-    local len = math.sqrt(dx*dx + dy*dy)
-    if len == 0 then return end        -- por si hace click exacto en el centro
-
-    local dirX, dirY = dx/len, dy/len
-
-    -- 2️⃣  posición del hitbox: un poco delante del jugador
-    local offset = player.weapon.range * 0.6      -- ajustá “0.6” a tu gusto
-    local hbX = player.x + dirX * offset
-    local hbY = player.y + dirY * offset
-
-    -- 3️⃣  crear hitbox sensor
-    local hbRadius = 25
-    local hitbox = world:newCircleCollider(
-                       hbX, hbY, hbRadius)
-    hitbox:setType('dynamic')
-    hitbox:setCollisionClass('Attack')
-    hitbox:setSensor(true)
-
-    hitbox.life = 0.10
-    player.currentHitbox = hitbox
-end
 
 function love.draw()
+
+    -------- Map --------
     gameMap:draw()
-    player.anim:draw(
-    player.spriteSheet,
-    player.x,
-    player.y,
-    nil,
-    scale,
-    nil,
-    6,
-    9
-    )
-    local d = Enemies.dummy
-    local cx, cy = d.collider:getPosition()
-    love.graphics.setColor(0.8, 0.1, 0.1)
-    love.graphics.rectangle('fill',
-        cx - 20, cy - 35,   -- 40×70 centrado
-        40, 70)
-    love.graphics.setColor(1, 1, 1)
 
-        -- --- Jugador (HP bar encima) ---
-    drawHPBar(
-        player.x - 25,                -- x
-        player.y - (18*scale)/2 - 12, -- y (un poco sobre la cabeza)
-        50, 5,                        -- ancho, alto
-        player.hp, 100)
+    -------- Player --------
+    player.anim:draw(                -- sprite/animación
+        player.spriteSheet,
+        player.x, player.y,
+        nil,                         -- rot
+        scale,                       -- escala
+        nil,
+        6, 9)                        -- offsets
 
-    -- --- Dummy ---
+    ---- Barra de vida del jugador ----
     drawHPBar(
-        Enemies.dummy.collider:getX() - 20,
-        Enemies.dummy.collider:getY() - Enemies.dummy.h/2 - 10,
-        40, 4,
-        Enemies.dummy.hp, Enemies.dummy.hpMax)
-    world:draw() -- (opcional) útil para debug
+        player.x - 25,               -- x
+        player.y - (18 * scale) / 2 - 12, -- y (sobre la cabeza)
+        50, 5,                       -- ancho, alto
+        player.current_hp,           -- vida actual
+        player.hp)                   -- vida máxima
+
+
+    -------- Enemies --------
+    for _, enemy in ipairs(Enemies.list) do
+
+        ---- Cuerpo (placeholder en rojo) ----
+        local cx, cy = enemy.collider:getPosition()
+        love.graphics.setColor(0.8, 0.1, 0.1)
+        love.graphics.rectangle('fill',
+            cx - enemy.width / 2,
+            cy - enemy.height / 2,
+            enemy.width,
+            enemy.height)
+        love.graphics.setColor(1, 1, 1)
+
+        ---- Barra de vida ----
+        drawHPBar(
+            cx - enemy.width / 2,
+            cy - enemy.height / 2 - 10,
+            enemy.width,
+            4,
+            enemy.current_hp,
+            enemy.hp)
+    end
+
+
+    -------- Debug (colliders) --------
+    world:draw() -- quitá o comenta esto cuando no haga falta
 end
+
