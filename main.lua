@@ -89,7 +89,7 @@ function love.load()
 function love.update(dt)
 
     -------- Player Movement --------
-
+     
     ---- Definitions ----
     
     local isMoving = false
@@ -147,6 +147,13 @@ function love.update(dt)
     if love.mouse.isDown(1) and player.canAttack then
         local weapon = Weapons[player.currentWeapon]          -- "sword" o lo que sea
         weapon.attacks.swing:execute(player, world)                          -- crea hitbox/bala
+        player.canAttack  = false
+        player.attackTime = weapon.cooldown
+    end
+
+    if love.mouse.isDown(2) and player.canAttack then
+        local weapon = Weapons["rifle"]     -- "sword" o lo que sea
+        weapon.attacks.shot:execute(player, world)                          -- crea hitbox/bala
         player.canAttack  = false
         player.attackTime = weapon.cooldown
     end

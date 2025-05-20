@@ -31,7 +31,7 @@ function enemies.spawn(enemyType, x, y, world, size_multiplier, hp_multiplier, s
     new_enemy.speed = enemyType.speed * speed_multiplier
 
     new_enemy.collider = world:newCollider("Rectangle",{new_enemy.x, new_enemy.y,new_enemy.width, new_enemy.height})
-    new_enemy.collider:setType('static')
+    new_enemy.collider:setType('dynamic')
     new_enemy.collider.identity = "Enemy"
     new_enemy.collider.parent   = new_enemy   
 
