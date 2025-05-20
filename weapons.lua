@@ -63,13 +63,13 @@ function weapons.sword.attacks.swing:execute(player, world)
             return
         end
 
-        --ángulo y posición intermedios
-        local currentAngle = currentSwing.startAngle + t * (currentSwing.endAngle - currentSwing.startAngle)
-        local cx = player.x + math.cos(currentAngle) * (currentSwing.length/2)
-        local cy = player.y  + math.sin(currentAngle) * (currentSwing.length/2)
+        -- ángulo y posición intermedios
+        --local currentAngle = currentSwing.startAngle + t * (currentSwing.endAngle - currentSwing.startAngle)
+        --local cx = player.x + math.cos(currentAngle) * (currentSwing.length/2)
+        --local cy = player.y  + math.sin(currentAngle) * (currentSwing.length/2)
 
-        currentSwing.collider:setPosition(cx, cy)
-        currentSwing.collider:setAngle(currentAngle)
+        --currentSwing.collider:setPosition(cx, cy)
+        --currentSwing.collider:setAngle(currentAngle)
     end
 
     table.insert(ActiveAttacks, newSwing)
