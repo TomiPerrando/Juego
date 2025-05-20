@@ -1,52 +1,44 @@
 local weapons = {}
+local ActiveAttacks = {}     -- la gestiona este módulo
 
-----------------------------------------------------------------
---------  Lista interna de hitboxes activos de espada  --------
-----------------------------------------------------------------
-local ActiveSwings = {}     -- la gestiona este módulo
+-------- Tabla principal --------
 
-----------------------------------------------------------------
---------  Espada  ---------------------------------------------
-----------------------------------------------------------------
 weapons.sword = {
     cooldown  = 0.35,
     damage    = 15,
-    range     = 60,
-    thickness = 18,
-    arc       = math.rad(90)     -- barrido total (90°)
+    range     = 20, -- Que tan lejos del centro del personaje se crean los ataques
+    length= 60,
+    width = 18,
+    attacks = {
+        swing = {        
+            duration  = 0.20,
+            timer      = 0,
+            damage     = 20,
+            arc = math.rad(90)     -- barrido total (90°)
+            --startAngle = player:getAngleToMouse() - weapon.attacks.swing.arc/2,
+            --endAngle   = player:getAngleToMouse() + weapon.attacks.swing.arc/2,
+            }
+        }
 }
 
-function weapons.sword.attack(player, world)
-    print(">> weapons.sword.attack: iniciando swing")    
+function weapons.sword.attacks.swing:execute(player, world)
+    print(">> weapons.sword.swing: iniciando ataque")    
 
-    ------------------------------------------------------------
-    -- 1. Datos iniciales
-    ------------------------------------------------------------
+    -------- Instancia del collider --------
     local weapon = weapons.sword
-    local swing = {
-        totalTime  = 0.20,
-        timer      = 0,
-        damage     = 20,
-        startAngle = player:getAngleToMouse() - weapon.arc/2,
-        endAngle   = player:getAngleToMouse() + weapon.arc/2,
-        length     = weapon.range,
-        thickness  = weapon.thickness
-    }
-
-    ------------------------------------------------------------
-    -- 2. Collider rectangular centrado en el jugador
-    ------------------------------------------------------------
-    swing.collider = world:newCollider("Rectangle", {
-        player.x + 100 , player.y+ 100,
-        swing.length, swing.thickness})
-    swing.collider:setType("kinematic")
-    swing.collider:setSensor(true)
-    swing.collider.identity = "PlayerSword"
+    local swing = self
+    local newSwing = {}
+    newSwing.timer = 0
+    newSwing.collider = world:newCollider("Rectangle", {player.x+100 , player.y+100, weapon.length, weapon.width})
+    newSwing.collider:setType("dynamic")
+    newSwing.collider:setSensor(true)
+    newSwing.collider.identity = "PlayerSword"
+    newSwing.dead = false
     print("Collider creado en:", player.x, player.y)
 
     -- callback de impacto
-    function swing.collider:enter(other)
-        print(">> swing.collider:enter con", other.identity)
+    function newSwing.collider:enter(other, contact)
+        print(">> swing.collider:enter with", other.identity)
         if other.identity == "Enemy" then
             print("parent es", other.parent)
             other.parent.current_hp =
@@ -55,45 +47,45 @@ function weapons.sword.attack(player, world)
         end
     end
 
-    ------------------------------------------------------------
-    -- 3. Método update propio
-    ------------------------------------------------------------
-    function swing:update(dt)
+    -------- Update --------
+    
+    function newSwing:update(dt)
         -- avanzar tiempo
-        self.timer = self.timer + dt
-        local t = self.timer / self.totalTime
+        local currentSwing = self
+        currentSwing.timer = currentSwing.timer + dt
 
+        local t = currentSwing.timer / swing.duration
         -- destruir al terminar
         if t >= 1 then
             print(">> swing: tiempo cumplido, destruyendo collider")
-            self.collider:destroy()
-            self.dead = true
+            currentSwing.collider:destroy()
+            currentSwing.dead = true
             return
         end
 
-        -- ángulo y posición intermedios
-        local curAngle = self.startAngle + t * (self.endAngle - self.startAngle)
-        local cx = player.x+100 + math.cos(curAngle) * (self.length/2)
-        local cy = player.y+100  + math.sin(curAngle) * (self.length/2)
+        --ángulo y posición intermedios
+        local currentAngle = currentSwing.startAngle + t * (currentSwing.endAngle - currentSwing.startAngle)
+        local cx = player.x + math.cos(currentAngle) * (currentSwing.length/2)
+        local cy = player.y  + math.sin(currentAngle) * (currentSwing.length/2)
 
-        self.collider:setPosition(cx, cy)
-        self.collider:setAngle(curAngle)
+        currentSwing.collider:setPosition(cx, cy)
+        currentSwing.collider:setAngle(currentAngle)
     end
 
-    table.insert(ActiveSwings, swing)
-    print(">> swing agregado, ActiveSwings =", #ActiveSwings)
+    table.insert(ActiveAttacks, newSwing)
+    print(">> swing agregado, ActiveAttacks =", #ActiveAttacks)
 end
 
 ----------------------------------------------------------------
 --------  Llamada de mantenimiento desde el juego  ------------
 ----------------------------------------------------------------
 function weapons.update(dt)
-    for i = #ActiveSwings, 1, -1 do
-        local s = ActiveSwings[i]
-        s:update(dt)
-        if s.dead then
+    for i = #ActiveAttacks, 1, -1 do
+        print(ActiveAttacks[i])
+        ActiveAttacks[i]:update(dt)
+        if ActiveAttacks[i].dead then
             print(">> weapons.update: removiendo swing muerto")
-            table.remove(ActiveSwings, i)
+            table.remove(ActiveAttacks, i)
         end
     end
 end

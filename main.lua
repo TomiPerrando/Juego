@@ -145,14 +145,16 @@ function love.update(dt)
 
     -- Disparo del ataque (solo si hay clic y arma lista)
     if love.mouse.isDown(1) and player.canAttack then
-        local w = Weapons[player.currentWeapon]          -- "sword" o lo que sea
-        w.attack(player, world)                          -- crea hitbox/bala
+        local weapon = Weapons[player.currentWeapon]          -- "sword" o lo que sea
+        weapon.attacks.swing:execute(player, world)                          -- crea hitbox/bala
         player.canAttack  = false
-        player.attackTime = w.cooldown
+        player.attackTime = weapon.cooldown
     end
+
 
     Weapons.update(dt)
     world:update(dt)
+    
     player.anim:update(dt)
 end
 end
