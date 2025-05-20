@@ -14,7 +14,7 @@ weapons.sword = {
             duration  = 0.20,
             timer      = 0,
             damage     = 20,
-            arc = math.rad(90)     -- barrido total (90°)
+            arc = math.rad(180)     -- barrido total (90°)
             --startAngle = player:getAngleToMouse() - weapon.attacks.swing.arc/2,
             --endAngle   = player:getAngleToMouse() + weapon.attacks.swing.arc/2,
             }
@@ -29,6 +29,8 @@ function weapons.sword.attacks.swing:execute(player, world)
     local swing = self
     local newSwing = {}
     newSwing.timer = 0
+    newSwing.startAngle = player:getAngleToMouse() - weapon.attacks.swing.arc/2
+    newSwing.endAngle   = player:getAngleToMouse() + weapon.attacks.swing.arc/2
     newSwing.collider = world:newCollider("Rectangle", {player.x+100 , player.y+100, weapon.length, weapon.width})
     newSwing.collider:setType("dynamic")
     newSwing.collider:setSensor(true)
@@ -64,12 +66,12 @@ function weapons.sword.attacks.swing:execute(player, world)
         end
 
         -- ángulo y posición intermedios
-        --local currentAngle = currentSwing.startAngle + t * (currentSwing.endAngle - currentSwing.startAngle)
-        --local cx = player.x + math.cos(currentAngle) * (currentSwing.length/2)
-        --local cy = player.y  + math.sin(currentAngle) * (currentSwing.length/2)
+        local currentAngle = currentSwing.startAngle + t * (currentSwing.endAngle - currentSwing.startAngle)
+        local cx = player.x + math.cos(currentAngle) * (weapon.length/2)
+        local cy = player.y  + math.sin(currentAngle) * (weapon.length/2)
 
-        --currentSwing.collider:setPosition(cx, cy)
-        --currentSwing.collider:setAngle(currentAngle)
+        currentSwing.collider:setPosition(cx, cy)
+        currentSwing.collider:setAngle(currentAngle)
     end
 
     table.insert(ActiveAttacks, newSwing)
