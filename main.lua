@@ -2,8 +2,11 @@ Enemies = require "enemies"
 anim8 = require 'libraries.anim8'
 sti = require 'libraries.sti'
 bf = require 'libraries.breezefield'
+Weapons = require "weapons"
 
 scale = 4.5
+
+print("================Iniciando juego================")    
 
 local function drawHPBar(x, y, w, h, hp, hpMax)
     -- fondo gris
@@ -53,6 +56,7 @@ function love.load()
     player.speed = 300
     player.hp = 300
     player.current_hp = 300
+    player.currentWeapon = "sword"
     player.spriteSheet = love.graphics.newImage('sprites/player-sheet.png')
     player.grid = anim8.newGrid(12, 18, player.spriteSheet:getWidth(), player.spriteSheet:getHeight())
 
@@ -65,7 +69,8 @@ function love.load()
 
     player.collider = world:newCollider("Rectangle",{player.x, player.y, 10 * scale, 16 * scale, 14})
     player.collider:setFixedRotation(true)
-    player.attackHitbox = nil -- Requerido por el ataque
+    player.collider.identity = "Player"
+    player.attackTime = 0
 
 
     ---- Player Functions----
@@ -81,22 +86,10 @@ function love.load()
 
     Enemies.spawn("dummy", 1000, 400, world)
 
-    ---- Simple weapon ----
-
-    player.weapon = {
-        range    = 60,    -- píxeles
-        damage   = 15,
-        cooldown = 0.35
-    }
-    player.canAttack  = true
-    player.attackTime = 0
-end
-
-
 function love.update(dt)
 
     -------- Player Movement --------
-
+     
     ---- Definitions ----
     
     local isMoving = false
@@ -144,59 +137,33 @@ function love.update(dt)
 
     -------- Player Attack --------
 
-    ---- CoolDown ----
-
+    -- Cooldown
     if not player.canAttack then
         player.attackTime = player.attackTime - dt
         if player.attackTime <= 0 then player.canAttack = true end
     end
 
-    ---- Atack on click ----
-
+    -- Disparo del ataque (solo si hay clic y arma lista)
     if love.mouse.isDown(1) and player.canAttack then
-        local angle = player:getAngleToMouse()
-        local offset = player.weapon.range
-        local hitboxX = player.x + math.cos(angle) * offset
-        local hitboxY = player.y + math.sin(angle) * offset
-
-        local hitboxWidth  = 20
-        local hitboxHeight = 20
-
-        local hitbox = world:newCollider("Rectangle",{hitboxX, hitboxY, hitboxWidth, hitboxHeight})
-        hitbox:setType("dynamic")
-        hitbox.identity = "PlayerAttack"
-        hitbox.life = 0.1 -- segundos que dura el hitbox
-
-        function hitbox:enter(other, contact)
-            if other.identity == "Enemy" then
-                local enemy = other.parent     
-                if enemy and enemy.current_hp then
-                    enemy.current_hp = math.max(
-                        0, enemy.current_hp - player.weapon.damage)
-                    print("¡Golpe!", enemy.current_hp .. " HP restante")
-                end
-            end
-        end
-        player.attackHitbox = hitbox
-        player.attackAngle = angle
-        player.canAttack = false
-        player.attackTime = player.weapon.cooldown
+        local weapon = Weapons[player.currentWeapon]          -- "sword" o lo que sea
+        weapon.attacks.swing:execute(player, world)                          -- crea hitbox/bala
+        player.canAttack  = false
+        player.attackTime = weapon.cooldown
     end
 
+    if love.mouse.isDown(2) and player.canAttack then
+        local weapon = Weapons["rifle"]     -- "sword" o lo que sea
+        weapon.attacks.shot:execute(player, world)                          -- crea hitbox/bala
+        player.canAttack  = false
+        player.attackTime = weapon.cooldown
+    end
+
+
+    Weapons.update(dt)
     world:update(dt)
+    
     player.anim:update(dt)
-
-    -------- Collitions check --------
-
-    if player.attackHitbox and not player.attackHitbox:isDestroyed() then
-        local hitbox = player.attackHitbox
-        hitbox.life = hitbox.life - dt
-
-        if hitbox.life <= 0 then
-            hitbox:destroy()
-            player.attackHitbox = nil
-        end
-    end
+end
 end
 
 
@@ -250,4 +217,3 @@ function love.draw()
     -------- Debug (colliders) --------
     world:draw() -- quitá o comenta esto cuando no haga falta
 end
-
