@@ -1,17 +1,17 @@
 local weapons = {}
-local ActiveAttacks = {}     -- la gestiona este módulo
+ActiveAttacks = {}     -- la gestiona este módulo
 
 -------- Sword --------
 
 weapons.sword = {
     cooldown  = 0.35,
     damage    = 15,
-    range     = 20, -- Que tan lejos del centro del personaje se crean los ataques
-    length= 60,
+    range     = 40, -- Que tan lejos del centro del personaje se crean los ataques
+    length = 60,
     width = 18,
     attacks = {
         swing = {        
-            duration  = 0.20,
+            duration  = 10,
             timer      = 0,
             damage     = 20,
             arc = math.rad(90)     -- barrido total (90°)
@@ -81,7 +81,7 @@ weapons.rifle = {
     damage    = 1,
     offset     = 20, -- Que tan lejos del centro del personaje se crean los ataques
     range = 300,
-    bullet_size = 4,
+    bullet_size = 8,
     attacks = {
         shot = {        
             duration  = 3,

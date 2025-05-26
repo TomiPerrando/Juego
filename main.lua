@@ -52,7 +52,7 @@ function love.load()
     ---- player1 ----
 
     player1 = {}
-    player1.x = 400
+    player1.x = 400 -- player1["x"] = 400
     player1.y = 200
     player1.speed = 300
     player1.hp = 300
@@ -69,7 +69,7 @@ function love.load()
     player1.animations.left = anim8.newAnimation(player1.grid('1-4', 2), 0.2)
     player1.animations.right = anim8.newAnimation(player1.grid('1-4', 3), 0.2)
     player1.animations.up = anim8.newAnimation(player1.grid('1-4', 4), 0.2)
-    player1.anim = player1.animations.left
+    player1.anim = player1.animations.right
 
     player1.collider = world:newCollider("Rectangle",{player1.x, player1.y, 10 * scale, 16 * scale, 14})
     player1.collider:setFixedRotation(true)
@@ -101,6 +101,13 @@ function love.load()
     player2.collider:setFixedRotation(true)
     player2.collider.identity = "player2"
     player2.attackTime = 0
+
+    -- Sprite bala --
+
+    bala = {}
+    bala.sprite = love.graphics.newImage('sprites/ball_only.png')
+
+    espada = love.graphics.newImage('sprites/sword.png')
 
     ---- player1 Functions----
 
@@ -327,6 +334,20 @@ function love.draw()
         50, 5,                       -- ancho, alto
         player1.current_hp,           -- vida actual
         player1.hp)                   -- vida máxima
+
+    --- Bala ---
+    
+    local scalee = 4
+
+    for i = #ActiveAttacks, 1, -1 do
+        if ActiveAttacks[i].collider.identity == "PlayerBullet" then
+            love.graphics.draw(bala.sprite, ActiveAttacks[i].collider:getX() - bala.sprite:getWidth()* 0.5, ActiveAttacks[i].collider:getY() - bala.sprite:getHeight() * 0.5 )
+        end
+        if ActiveAttacks[i].collider.identity == "PlayerSword" then
+            love.graphics.draw(espada, ActiveAttacks[i].collider:getX() - espada:getWidth()* 0.5 * scalee, ActiveAttacks[i].collider:getY() - espada:getHeight() * 0.5 * scalee, ActiveAttacks[i].collider:getAngle(), scalee, scalee,espada:getWidth() *.15, espada:getHeight()* .8)
+        end
+
+    end
 
 
     -------- Enemies --------
