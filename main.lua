@@ -21,6 +21,7 @@ local function drawHPBar(x, y, w, h, hp, hpMax)
     love.graphics.setColor(1,1,1)  -- reset
 end
 
+currentBlock = nil
 
 function love.load()
 
@@ -146,18 +147,32 @@ function love.update(dt)
     -- Disparo del ataque (solo si hay clic y arma lista)
     if love.mouse.isDown(1) and player.canAttack then
         local weapon = Weapons[player.currentWeapon]          -- "sword" o lo que sea
-        weapon.attacks.swing:execute(player, world)                          -- crea hitbox/bala
+        weapon.attacks.swing:execute(player, world)                         
         player.canAttack  = false
         player.attackTime = weapon.cooldown
     end
 
     if love.mouse.isDown(2) and player.canAttack then
         local weapon = Weapons["rifle"]     -- "sword" o lo que sea
-        weapon.attacks.shot:execute(player, world)                          -- crea hitbox/bala
+        weapon.attacks.shot:execute(player, world)                          
         player.canAttack  = false
         player.attackTime = weapon.cooldown
     end
-
+    if love.mouse.isDown(3) then
+        if not currentBlock  then
+            print("NOT CURRENT BLOCK")
+            local weapon = Weapons["shield"]     
+            weapon.attacks.block:execute(player, world)  
+        end
+    else
+        if currentBlock then
+            print("DESTROYING SHIELD COLLIDER.")
+            currentBlock.collider:destroy()
+            currentBlock.dead = true
+            currentBlock = nil
+            player.canAttack = true
+        end
+    end
 
     Weapons.update(dt)
     world:update(dt)
