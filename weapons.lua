@@ -27,8 +27,8 @@ function weapons.sword.attacks.swing:execute(player, world)
     local swing = self
     local newSwing = {}
     newSwing.timer = 0
-    newSwing.startAngle = player:getAngleToMouse() - weapon.attacks.swing.arc/2
-    newSwing.endAngle   = player:getAngleToMouse() + weapon.attacks.swing.arc/2
+    newSwing.startAngle = getAngleToMouse(player) - weapon.attacks.swing.arc/2
+    newSwing.endAngle   = getAngleToMouse(player) + weapon.attacks.swing.arc/2
     newSwing.collider = world:newCollider("Rectangle", {player.x , player.y, weapon.length, weapon.width})
     newSwing.collider:setType("dynamic")
     newSwing.collider:setSensor(true)
@@ -100,7 +100,7 @@ function weapons.rifle.attacks.shot:execute(player, world)
     local shot = self
     local newShot = {}
     newShot.timer = 0
-    newShot.angle = player:getAngleToMouse()
+    newShot.angle = getAngleToMouse(player)
     newShot.collider = world:newCollider("Circle", {player.x , player.y, weapon.bullet_size})
     newShot.collider:setType("kinematic")
     newShot.collider:setSensor(true)
@@ -172,29 +172,56 @@ function weapons.shield.attacks.block:execute(player, world)
     -------- Instancia del collider --------
     local weapon = weapons.shield
     local newBlock = {}
-    newBlock.angle = player:getAngleToMouse()
+    newBlock.angle = getAngleToMouse(player)
     newBlock.collider = world:newCollider("Rectangle", {player.x + math.cos(newBlock.angle) * weapon.offset, player.y + math.cos(newBlock.angle) * weapon.offset, weapon.length, weapon.width})
-    newBlock.collider:setType("kinematic")
+    newBlock.collider:setType("dynamic")
     newBlock.collider:setSensor(true)
     newBlock.collider.identity = "PlayerShield"
     newBlock.dead = false
     print("Collider creado en:", player.x, player.y)
 
-    -- callback de impacto
-    function newBlock.collider:enter(other, contact)
-        print(">> block.collider:enter with", other.identity)
-        if other.identity == "PlayerBullet" then
-            print("parent es", other.parent)
-            local vx,vy = other:getLinearVelocity()
-            other:setLinearVelocity(-vx, vy) --testeo por ahora, no tocar
-        end
+----------------------------------------------------------------
+-- callback de impacto dentro de execute
+----------------------------------------------------------------
+function newBlock.collider:enter(other, contact)
+    if other.identity ~= "PlayerBullet" then return end
+
+    -- 1) velocidad actual de la bala
+    local vx, vy = other:getLinearVelocity()
+
+    -- 2) normal “geométrica” del escudo  = (cos θ, sin θ)
+    --    θ es el ángulo del collider (en radianes)
+    local ang = self:getAngle()
+    local nx, ny = math.cos(ang), math.sin(ang)
+
+    -- (Si quisieras “hacia afuera” inviertes: nx = -nx, ny = -ny)
+
+    -- 3) reflejar: v' = v - 2⋅(v·n)⋅n
+    local dot = vx*nx + vy*ny
+    local rx  = vx - 2*dot*nx
+    local ry  = vy - 2*dot*ny
+
+    -- 4) amortiguar (sin elasticidad)
+    local DAMP = 0.5         -- 0 = se pega, 1 = rebote perfecto
+    rx, ry = rx*DAMP, ry*DAMP
+
+    -- 5) asignar la nueva velocidad
+    other:setLinearVelocity(rx, ry)
+
+    -- (Opcional) si guardas vx,vy en la tabla-bala:
+    if other.parent then
+        other.parent.vx, other.parent.vy = rx, ry
     end
+end
+
+
+
 
     -------- Update --------
     
     function newBlock:update(dt)
         local currentBlock = self
-        currentBlock.angle = player:getAngleToMouse()          
+        currentBlock.angle = getAngleToMouse(player)  
 
         local cx = player.x + math.cos(currentBlock.angle) * (weapon.offset) 
         local cy = player.y  + math.sin(currentBlock.angle) * (weapon.offset)

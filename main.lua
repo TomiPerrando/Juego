@@ -21,8 +21,6 @@ local function drawHPBar(x, y, w, h, hp, hpMax)
     love.graphics.setColor(1,1,1)  -- reset
 end
 
-currentBlock = nil
-
 function love.load()
 
     -------- Configs --------
@@ -49,38 +47,64 @@ function love.load()
 
     -------- Main Entities --------
     
-    ---- Player ----
+    ---- player1 ----
 
-    player = {}
-    player.x = 400
-    player.y = 200
-    player.speed = 300
-    player.hp = 300
-    player.current_hp = 300
-    player.currentWeapon = "sword"
-    player.spriteSheet = love.graphics.newImage('sprites/player-sheet.png')
-    player.grid = anim8.newGrid(12, 18, player.spriteSheet:getWidth(), player.spriteSheet:getHeight())
-
-    player.animations = {}
-    player.animations.down = anim8.newAnimation(player.grid('1-4', 1), 0.2)
-    player.animations.left = anim8.newAnimation(player.grid('1-4', 2), 0.2)
-    player.animations.right = anim8.newAnimation(player.grid('1-4', 3), 0.2)
-    player.animations.up = anim8.newAnimation(player.grid('1-4', 4), 0.2)
-    player.anim = player.animations.left
-
-    player.collider = world:newCollider("Rectangle",{player.x, player.y, 10 * scale, 16 * scale, 14})
-    player.collider:setFixedRotation(true)
-    player.collider.identity = "Player"
-    player.attackTime = 0
+    player1 = {}
+    player1.x = 400
+    player1.y = 200
+    player1.speed = 300
+    player1.hp = 300
+    player1.current_hp = 300
+    player1.currentWeapon = "sword"
+    player1.spriteSheet = love.graphics.newImage('sprites/player-sheet.png')
+    player1.grid = anim8.newGrid(12, 18, player1.spriteSheet:getWidth(), player1.spriteSheet:getHeight())
+    player1.shield = nil
 
 
-    ---- Player Functions----
 
-    function player:getAngleToMouse()
-    local mouseX, mouseY = love.mouse.getPosition()
-    local dx = mouseX - self.x
-    local dy = mouseY - self.y
-    return math.atan2(dy, dx)
+    player1.animations = {}
+    player1.animations.down = anim8.newAnimation(player1.grid('1-4', 1), 0.2)
+    player1.animations.left = anim8.newAnimation(player1.grid('1-4', 2), 0.2)
+    player1.animations.right = anim8.newAnimation(player1.grid('1-4', 3), 0.2)
+    player1.animations.up = anim8.newAnimation(player1.grid('1-4', 4), 0.2)
+    player1.anim = player1.animations.left
+
+    player1.collider = world:newCollider("Rectangle",{player1.x, player1.y, 10 * scale, 16 * scale, 14})
+    player1.collider:setFixedRotation(true)
+    player1.collider.identity = "player1"
+    player1.attackTime = 0
+
+
+    ---- player2 ----
+
+    player2 = {}
+    player2.x = 400
+    player2.y = 200
+    player2.speed = 300
+    player2.hp = 300
+    player2.current_hp = 300
+    player2.currentWeapon = "sword"
+    player2.spriteSheet = love.graphics.newImage('sprites/player2-sheet.png')
+    player2.grid = anim8.newGrid(12, 18, player2.spriteSheet:getWidth(), player2.spriteSheet:getHeight())
+    player2.shield = nil
+
+    player2.animations = {}
+    player2.animations.down = anim8.newAnimation(player2.grid('1-4', 1), 0.2)
+    player2.animations.left = anim8.newAnimation(player2.grid('1-4', 2), 0.2)
+    player2.animations.right = anim8.newAnimation(player2.grid('1-4', 3), 0.2)
+    player2.animations.up = anim8.newAnimation(player2.grid('1-4', 4), 0.2)
+    player2.anim = player2.animations.left
+
+    player2.collider = world:newCollider("Rectangle",{player2.x, player2.y, 10 * scale, 16 * scale, 14})
+    player2.collider:setFixedRotation(true)
+    player2.collider.identity = "player2"
+    player2.attackTime = 0
+
+    ---- player1 Functions----
+
+    function getAngleToMouse(player)
+        local mx, my = love.mouse.getPosition()
+        return math.atan2(my - player.y, mx - player.x)
     end
 
     ---- Starting Enemies ----
@@ -89,7 +113,7 @@ function love.load()
 
 function love.update(dt)
 
-    -------- Player Movement --------
+    -------- player1 Movement --------
      
     ---- Definitions ----
     
@@ -97,23 +121,23 @@ function love.update(dt)
     local vx, vy = 0, 0
 
     if love.keyboard.isDown("d") then
-        vx = player.speed
-        player.anim = player.animations.right
+        vx = player1.speed
+        player1.anim = player1.animations.right
         isMoving = true
     end
     if love.keyboard.isDown("a") then
-        vx = player.speed *-1
-        player.anim = player.animations.left
+        vx = player1.speed *-1
+        player1.anim = player1.animations.left
         isMoving = true
     end
     if love.keyboard.isDown("s") then
-        vy = player.speed
-        player.anim = player.animations.down
+        vy = player1.speed
+        player1.anim = player1.animations.down
         isMoving = true
     end
     if love.keyboard.isDown("w") then
-        vy = player.speed * -1
-        player.anim = player.animations.up
+        vy = player1.speed * -1
+        player1.anim = player1.animations.up
         isMoving = true
     end
         
@@ -121,63 +145,152 @@ function love.update(dt)
 
     local len = math.sqrt(vx^2 + vy^2)
     if len > 0 then
-        vx = (vx / len) * player.speed
-        vy = (vy / len) * player.speed
+        vx = (vx / len) * player1.speed
+        vy = (vy / len) * player1.speed
     end
 
     ---- Collider-based movement ----
 
-    player.collider:setLinearVelocity(vx, vy)   
+    player1.collider:setLinearVelocity(vx, vy)   
 
-    player.x = player.collider:getX()
-    player.y = player.collider:getY()
+    player1.x = player1.collider:getX()
+    player1.y = player1.collider:getY()
 
     if not isMoving then
-        player.anim:gotoFrame(2)
+        player1.anim:gotoFrame(2)
     end
 
-    -------- Player Attack --------
+
+    -------- player2 Movement --------
+     
+    ---- Definitions ----
+    
+    local isMoving = false
+    local vx, vy = 0, 0
+
+    if love.keyboard.isDown("right") then
+        vx = player2.speed
+        player2.anim = player2.animations.right
+        isMoving = true
+    end
+    if love.keyboard.isDown("left") then
+        vx = player2.speed *-1
+        player2.anim = player2.animations.left
+        isMoving = true
+    end
+    if love.keyboard.isDown("down") then
+        vy = player2.speed
+        player2.anim = player2.animations.down
+        isMoving = true
+    end
+    if love.keyboard.isDown("up") then
+        vy = player2.speed * -1
+        player2.anim = player2.animations.up
+        isMoving = true
+    end
+        
+    ---- Diagonal movement ----
+
+    local len = math.sqrt(vx^2 + vy^2)
+    if len > 0 then
+        vx = (vx / len) * player2.speed
+        vy = (vy / len) * player2.speed
+    end
+
+    ---- Collider-based movement ----
+
+    player2.collider:setLinearVelocity(vx, vy)   
+
+    player2.x = player2.collider:getX()
+    player2.y = player2.collider:getY()
+
+    if not isMoving then
+        player2.anim:gotoFrame(2)
+    end
+
+
+    -------- player1 Attack --------
 
     -- Cooldown
-    if not player.canAttack then
-        player.attackTime = player.attackTime - dt
-        if player.attackTime <= 0 then player.canAttack = true end
+    if not player1.canAttack then
+        player1.attackTime = player1.attackTime - dt
+        if player1.attackTime <= 0 then player1.canAttack = true end
     end
 
     -- Disparo del ataque (solo si hay clic y arma lista)
-    if love.mouse.isDown(1) and player.canAttack then
-        local weapon = Weapons[player.currentWeapon]          -- "sword" o lo que sea
-        weapon.attacks.swing:execute(player, world)                         
-        player.canAttack  = false
-        player.attackTime = weapon.cooldown
+    if love.mouse.isDown(1) and player1.canAttack then
+        local weapon = Weapons[player1.currentWeapon]          -- "sword" o lo que sea
+        weapon.attacks.swing:execute(player1, world)                         
+        player1.canAttack  = false
+        player1.attackTime = weapon.cooldown
     end
 
-    if love.mouse.isDown(2) and player.canAttack then
+    if love.mouse.isDown(2) and player1.canAttack then
         local weapon = Weapons["rifle"]     -- "sword" o lo que sea
-        weapon.attacks.shot:execute(player, world)                          
-        player.canAttack  = false
-        player.attackTime = weapon.cooldown
+        weapon.attacks.shot:execute(player1, world)                          
+        player1.canAttack  = false
+        player1.attackTime = weapon.cooldown
     end
     if love.mouse.isDown(3) then
-        if not currentBlock  then
+        if not player1.shield then
             print("NOT CURRENT BLOCK")
             local weapon = Weapons["shield"]     
-            weapon.attacks.block:execute(player, world)  
+            player1.shield = weapon.attacks.block:execute(player1, world)  
         end
     else
-        if currentBlock then
+        if player1.shield  then
             print("DESTROYING SHIELD COLLIDER.")
-            currentBlock.collider:destroy()
-            currentBlock.dead = true
-            currentBlock = nil
-            player.canAttack = true
+            player1.shield.collider:destroy()
+            player1.shield.dead = true
+            player1.shield = nil
+            player1.canAttack = true
         end
     end
+
+        -------- player2 Attack --------
+
+    -- Cooldown
+    if not player2.canAttack then
+        player2.attackTime = player2.attackTime - dt
+        if player2.attackTime <= 0 then player2.canAttack = true end
+    end
+
+    -- Disparo del ataque (solo si hay clic y arma lista)
+    if love.mouse.isDown(4) and player2.canAttack then
+        local weapon = Weapons[player2.currentWeapon]          -- "sword" o lo que sea
+        weapon.attacks.swing:execute(player2, world)                         
+        player2.canAttack  = false
+        player2.attackTime = weapon.cooldown
+    end
+
+    if love.keyboard.isDown("e") and player2.canAttack then
+        local weapon = Weapons["rifle"]     -- "sword" o lo que sea
+        weapon.attacks.shot:execute(player2, world)                          
+        player2.canAttack  = false
+        player2.attackTime = weapon.cooldown
+    end
+    if love.mouse.isDown(5) then
+        if not player2.shield  then
+            print("NOT CURRENT BLOCK")
+            local weapon = Weapons["shield"]     
+            player2.shield = weapon.attacks.block:execute(player2, world)  
+        end
+    else
+        if player2.shield then
+            print("DESTROYING SHIELD COLLIDER.")
+            player2.shield.collider:destroy()
+            player2.shield.dead = true
+            player2.shield = nil
+            player2.canAttack = true
+        end
+    end
+
 
     Weapons.update(dt)
     world:update(dt)
     
-    player.anim:update(dt)
+    player1.anim:update(dt)
+    player2.anim:update(dt)
 end
 end
 
@@ -187,10 +300,19 @@ function love.draw()
     -------- Map --------
     gameMap:draw()
 
-    -------- Player --------
-    player.anim:draw(                -- sprite/animación
-        player.spriteSheet,
-        player.x, player.y,
+    -------- player1 --------
+    player1.anim:draw(                -- sprite/animación
+        player1.spriteSheet,
+        player1.x, player1.y,
+        nil,                         -- rot
+        scale,                       -- escala
+        nil,
+        6, 9)                        -- offsets
+
+            -------- player2 --------
+    player2.anim:draw(                -- sprite/animación
+        player2.spriteSheet,
+        player2.x, player2.y,
         nil,                         -- rot
         scale,                       -- escala
         nil,
@@ -198,11 +320,11 @@ function love.draw()
 
     ---- Barra de vida del jugador ----
     drawHPBar(
-        player.x - 25,               -- x
-        player.y - (18 * scale) / 2 - 12, -- y (sobre la cabeza)
+        player1.x - 25,               -- x
+        player1.y - (18 * scale) / 2 - 12, -- y (sobre la cabeza)
         50, 5,                       -- ancho, alto
-        player.current_hp,           -- vida actual
-        player.hp)                   -- vida máxima
+        player1.current_hp,           -- vida actual
+        player1.hp)                   -- vida máxima
 
 
     -------- Enemies --------
