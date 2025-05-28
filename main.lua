@@ -341,11 +341,42 @@ function love.draw()
 
     for i = #ActiveAttacks, 1, -1 do
         if ActiveAttacks[i].collider.identity == "PlayerBullet" then
-            love.graphics.draw(bala.sprite, ActiveAttacks[i].collider:getX() - bala.sprite:getWidth()* 0.5, ActiveAttacks[i].collider:getY() - bala.sprite:getHeight() * 0.5 )
+            local bulletX = ActiveAttacks[i].collider:getX()
+            local bulletY = ActiveAttacks[i].collider:getY()
+            local bulletAngle = ActiveAttacks[i].collider:getAngle()
+            local scale_bullet = 16 / bala.sprite:getWidth() -- asumimos ancho=alto
+
+            love.graphics.draw(
+                bala.sprite,
+                bulletX,
+                bulletY,
+                bulletAngle,
+                scale_bullet,
+                scale_bullet,
+                bala.sprite:getWidth() / 2,
+                bala.sprite:getHeight() / 2
+            )
         end
+        
         if ActiveAttacks[i].collider.identity == "PlayerSword" then
-            love.graphics.draw(espada, ActiveAttacks[i].collider:getX() - espada:getWidth()* 0.5 * scalee, ActiveAttacks[i].collider:getY() - espada:getHeight() * 0.5 * scalee, ActiveAttacks[i].collider:getAngle(), scalee, scalee,espada:getWidth() *.15, espada:getHeight()* .8)
+            local swordX = ActiveAttacks[i].collider:getX()
+            local swordY = ActiveAttacks[i].collider:getY()
+            local swordAngle = ActiveAttacks[i].collider:getAngle()
+            local scalee_x = 60 / espada:getWidth() --   60 / 6 = 10 
+            local scalee_y = 18 / espada:getHeight() --  18 / 15 = 1.2  --> escala para que el sprite sea del mismo tamaño que el collider.
+
+            love.graphics.draw(
+                espada,
+                swordX,
+                swordY,
+                swordAngle,
+                scalee_x,
+                scalee_y,
+                espada:getWidth() / 2, -- Ahora que son iguales, los centros son los mísmos.
+                espada:getHeight() / 2
+            )
         end
+
 
     end
 
