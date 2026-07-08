@@ -27,8 +27,8 @@ function weapons.sword.attacks.swing:execute(player, world)
     local swing = self
     local newSwing = {}
     newSwing.timer = 0
-    newSwing.startAngle = getAngleToMouse(player) - weapon.attacks.swing.arc/2
-    newSwing.endAngle   = getAngleToMouse(player) + weapon.attacks.swing.arc/2
+    newSwing.startAngle = getAttackAngle(player) - weapon.attacks.swing.arc/2
+    newSwing.endAngle   = getAttackAngle(player) + weapon.attacks.swing.arc/2
     newSwing.collider = world:newCollider("Rectangle", {player.x , player.y, weapon.length, weapon.width})
     newSwing.collider:setType("dynamic")
     newSwing.collider:setSensor(true)
@@ -65,8 +65,8 @@ function weapons.sword.attacks.swing:execute(player, world)
 
         -- ángulo y posición intermedios
         local currentAngle = currentSwing.startAngle + t * (currentSwing.endAngle - currentSwing.startAngle)
-        local cx = player.x + math.cos(currentAngle) * (weapon.length/2)
-        local cy = player.y  + math.sin(currentAngle) * (weapon.length/2)
+        local cx = player.x + math.cos(currentAngle) * ((weapon.length/2) + weapon.range)
+        local cy = player.y  + math.sin(currentAngle) * ((weapon.length/2) + weapon.range)
 
         currentSwing.collider:setPosition(cx, cy)
         currentSwing.collider:setAngle(currentAngle)
@@ -100,7 +100,7 @@ function weapons.rifle.attacks.shot:execute(player, world)
     local shot = self
     local newShot = {}
     newShot.timer = 0
-    newShot.angle = getAngleToMouse(player)
+    newShot.angle = getAttackAngle(player)
     newShot.collider = world:newCollider("Circle", {player.x , player.y, weapon.bullet_size})
     newShot.collider:setType("kinematic")
     newShot.collider:setSensor(true)
@@ -172,7 +172,7 @@ function weapons.shield.attacks.block:execute(player, world)
     -------- Instancia del collider --------
     local weapon = weapons.shield
     local newBlock = {}
-    newBlock.angle = getAngleToMouse(player)
+    newBlock.angle = getAttackAngle(player)
     newBlock.collider = world:newCollider("Rectangle", {player.x + math.cos(newBlock.angle) * weapon.offset, player.y + math.cos(newBlock.angle) * weapon.offset, weapon.length, weapon.width})
     newBlock.collider:setType("dynamic")
     newBlock.collider:setSensor(true)
@@ -221,7 +221,7 @@ end
     
     function newBlock:update(dt)
         local currentBlock = self
-        currentBlock.angle = getAngleToMouse(player)  
+        currentBlock.angle = getAttackAngle(player)
 
         local cx = player.x + math.cos(currentBlock.angle) * (weapon.offset) 
         local cy = player.y  + math.sin(currentBlock.angle) * (weapon.offset)

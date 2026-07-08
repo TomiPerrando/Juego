@@ -8,6 +8,28 @@ scale = 4.5
 
 print("================Iniciando juego================")    
 
+local GAMEPAD_DEADZONE = 0.25
+
+local function applyDeadzone(value)
+    value = value or 0
+    if math.abs(value) < GAMEPAD_DEADZONE then return 0 end
+    return value
+end
+
+local function getPlayer2Gamepad()
+    if not player2 then return nil end
+    if player2.gamepad then return player2.gamepad end
+
+    for _, joystick in ipairs(love.joystick.getJoysticks()) do
+        if joystick:isGamepad() then
+            player2.gamepad = joystick
+            player2.aimAngle = player2.aimAngle or 0
+            print("Player 2 gamepad:", joystick:getName())
+            return joystick
+        end
+    end
+end
+
 local function drawHPBar(x, y, w, h, hp, hpMax)
     -- fondo gris
     love.graphics.setColor(0.3, 0.3, 0.3)
@@ -87,6 +109,8 @@ function love.load()
     player2.spriteSheet = love.graphics.newImage('sprites/player2-sheet.png')
     player2.grid = anim8.newGrid(12, 18, player2.spriteSheet:getWidth(), player2.spriteSheet:getHeight())
     player2.shield = nil
+    player2.gamepad = nil
+    player2.aimAngle = nil
 
     player2.animations = {}
     player2.animations.down = anim8.newAnimation(player2.grid('1-4', 1), 0.2)
@@ -105,6 +129,10 @@ function love.load()
     function getAngleToMouse(player)
         local mx, my = love.mouse.getPosition()
         return math.atan2(my - player.y, mx - player.x)
+    end
+
+    function getAttackAngle(player)
+        return player.aimAngle or getAngleToMouse(player)
     end
 
     ---- Starting Enemies ----
@@ -188,6 +216,33 @@ function love.update(dt)
         player2.anim = player2.animations.up
         isMoving = true
     end
+
+    local gamepad = getPlayer2Gamepad()
+    if gamepad then
+        local gx = applyDeadzone(gamepad:getGamepadAxis("leftx"))
+        local gy = applyDeadzone(gamepad:getGamepadAxis("lefty"))
+        local isMovingWithStick = gx ~= 0 or gy ~= 0
+
+        if isMovingWithStick then
+            vx = gx * player2.speed
+            vy = gy * player2.speed
+            isMoving = true
+
+            if math.abs(gx) > math.abs(gy) then
+                player2.anim = gx > 0 and player2.animations.right or player2.animations.left
+            else
+                player2.anim = gy > 0 and player2.animations.down or player2.animations.up
+            end
+        end
+
+        local aimX = applyDeadzone(gamepad:getGamepadAxis("rightx"))
+        local aimY = applyDeadzone(gamepad:getGamepadAxis("righty"))
+        if aimX ~= 0 or aimY ~= 0 then
+            player2.aimAngle = math.atan2(aimY, aimX)
+        elseif isMovingWithStick then
+            player2.aimAngle = math.atan2(gy, gx)
+        end
+    end
         
     ---- Diagonal movement ----
 
@@ -256,20 +311,22 @@ function love.update(dt)
     end
 
     -- Disparo del ataque (solo si hay clic y arma lista)
-    if love.mouse.isDown(4) and player2.canAttack then
+    local player2Gamepad = getPlayer2Gamepad()
+
+    if (love.mouse.isDown(4) or (player2Gamepad and player2Gamepad:isGamepadDown("a"))) and player2.canAttack then
         local weapon = Weapons[player2.currentWeapon]          -- "sword" o lo que sea
         weapon.attacks.swing:execute(player2, world)                         
         player2.canAttack  = false
         player2.attackTime = weapon.cooldown
     end
 
-    if love.keyboard.isDown("e") and player2.canAttack then
+    if (love.keyboard.isDown("e") or (player2Gamepad and player2Gamepad:isGamepadDown("rightshoulder"))) and player2.canAttack then
         local weapon = Weapons["rifle"]     -- "sword" o lo que sea
         weapon.attacks.shot:execute(player2, world)                          
         player2.canAttack  = false
         player2.attackTime = weapon.cooldown
     end
-    if love.mouse.isDown(5) then
+    if love.mouse.isDown(5) or (player2Gamepad and player2Gamepad:isGamepadDown("leftshoulder")) then
         if not player2.shield  then
             print("NOT CURRENT BLOCK")
             local weapon = Weapons["shield"]     
@@ -292,6 +349,21 @@ function love.update(dt)
     player1.anim:update(dt)
     player2.anim:update(dt)
 end
+end
+
+function love.joystickadded(joystick)
+    if player2 and joystick:isGamepad() and not player2.gamepad then
+        player2.gamepad = joystick
+        player2.aimAngle = player2.aimAngle or 0
+        print("Player 2 gamepad:", joystick:getName())
+    end
+end
+
+function love.joystickremoved(joystick)
+    if player2 and player2.gamepad == joystick then
+        player2.gamepad = nil
+        player2.aimAngle = nil
+    end
 end
 
 
