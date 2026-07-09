@@ -1,0 +1,146 @@
+local
+{
+	let current = GetCurrentScriptDirectory();
+	let path = current ~ "FoX_shot.txt";
+	LoadEnemyShotData(path);
+}
+//BOLITAS PEQUEÑAS
+let FS_S_BALL_RED = 1;
+let FS_S_BALL_ORANGE = 2;
+let FS_S_BALL_YELLOW = 3;
+let FS_S_BALL_GREEN = 4;
+let FS_S_BALL_SKY = 5;
+let FS_S_BALL_BLUE = 6;
+let FS_S_BALL_PURPLE = 7;
+let FS_S_BALL_WHITE = 8;
+
+//BOLITAS MEDIANAS
+let FS_M_BALL_RED = 9;
+let FS_M_BALL_ORANGE = 10;
+let FS_M_BALL_YELLOW = 11;
+let FS_M_BALL_GREEN = 12;
+let FS_M_BALL_SKY = 13;
+let FS_M_BALL_BLUE = 14;
+let FS_M_BALL_PURPLE = 15;
+let FS_M_BALL_WHITE = 16;
+
+//BOLITAS MEDIANAS CON AURA
+let FS_MS_BALL_RED = 17;
+let FS_MS_BALL_ORANGE = 18;
+let FS_MS_BALL_YELLOW = 19;
+let FS_MS_BALL_GREEN = 20;
+let FS_MS_BALL_SKY = 21;
+let FS_MS_BALL_BLUE = 22;
+let FS_MS_BALL_PURPLE = 23;
+let FS_MS_BALL_WHITE = 24;
+
+//ARROZ
+let FS_RICE_RED = 25;
+let FS_RICE_ORANGE = 26;
+let FS_RICE_YELLOW = 27;
+let FS_RICE_GREEN = 28;
+let FS_RICE_SKY = 29;
+let FS_RICE_BLUE = 30;
+let FS_RICE_PURPLE = 31;
+let FS_RICE_WHITE = 32;
+
+//FLECHAS
+let FS_ARROW_RED = 33;
+let FS_ARROW_ORANGE = 34;
+let FS_ARROW_YELLOW = 35;
+let FS_ARROW_GREEN = 36;
+let FS_ARROW_SKY = 37;
+let FS_ARROW_BLUE = 38;
+let FS_ARROW_PURPLE = 39;
+let FS_ARROW_WHITE = 40;
+
+//ESPINAS
+let FS_SPIKE_RED = 41;
+let FS_SPIKE_ORANGE = 42;
+let FS_SPIKE_YELLOW = 43;
+let FS_SPIKE_GREEN = 44;
+let FS_SPIKE_SKY = 45;
+let FS_SPIKE_BLUE = 46;
+let FS_SPIKE_PURPLE = 47;
+let FS_SPIKE_WHITE = 48;
+
+//ESTRELLAS
+let FS_STAR_RED = 49;
+let FS_STAR_ORANGE = 50;
+let FS_STAR_YELLOW = 51;
+let FS_STAR_GREEN = 52;
+let FS_STAR_SKY = 53;
+let FS_STAR_BLUE = 54;
+let FS_STAR_PURPLE = 55;
+let FS_STAR_WHITE = 56;
+
+//FUEGO
+let FS_FIRE_RED = 57;
+let FS_FIRE_ORANGE = 58;
+let FS_FIRE_YELLOW = 59;
+let FS_FIRE_GREEN = 60;
+let FS_FIRE_SKY = 61;
+let FS_FIRE_BLUE = 62;
+let FS_FIRE_PURPLE = 63;
+let FS_FIRE_WHITE = 64;
+
+//bala de pistola
+let FS_GUN_RED = 65;
+let FS_GUN_ORANGE = 66;
+let FS_GUN_YELLOW = 67;
+let FS_GUN_GREEN = 68;
+let FS_GUN_SKY = 69;
+let FS_GUN_BLUE = 70;
+let FS_GUN_PURPLE = 71;
+let FS_GUN_WHITE = 72;
+
+//BOLAS GRANDES
+let FS_L_BALL_RED = 73;
+let FS_L_BALL_ORANGE = 74;
+let FS_L_BALL_YELLOW = 75;
+let FS_L_BALL_GREEN = 76;
+let FS_L_BALL_SKY = 77;
+let FS_L_BALL_BLUE = 78;
+let FS_L_BALL_PURPLE = 79;
+let FS_L_BALL_WHITE = 80;
+
+//LASERS
+let FS_BEAM_RED = 81;
+let FS_BEAM_ORANGE = 82;
+let FS_BEAM_YELLOW = 83;
+let FS_BEAM_GREEN = 84;
+let FS_BEAM_SKY = 85;
+let FS_BEAM_BLUE = 86;
+let FS_BEAM_PURPLE = 87;
+let FS_BEAM_WHITE = 88;
+let FS_BEAM_RAINBOW = 89;
+
+//kunais con cadena
+let FS_C_KUNAI_RED = 90;
+let FS_C_KUNAI_ORANGE = 91;
+let FS_C_KUNAI_YELLOW = 92;
+let FS_C_KUNAI_GREEN = 93;
+let FS_C_KUNAI_SKY = 94;
+let FS_C_KUNAI_BLUE = 95;
+let FS_C_KUNAI_PURPLE = 96;
+let FS_C_KUNAI_WHITE = 97;
+
+//bolas extra grandes (xdddd)
+let FS_XL_BALL_RED = 98;
+let FS_XL_BALL_ORANGE = 99;
+let FS_XL_BALL_YELLOW = 100;
+let FS_XL_BALL_GREEN = 101;
+let FS_XL_BALL_SKY = 102;
+let FS_XL_BALL_BLUE = 103;
+let FS_XL_BALL_PURPLE = 104;
+let FS_XL_BALL_WHITE = 105;
+
+//kunais normales
+let FS_KUNAI_RED = 106;
+let FS_KUNAI_ORANGE = 107;
+let FS_KUNAI_YELLOW = 108;
+let FS_KUNAI_GREEN = 109;
+let FS_KUNAI_SKY = 110;
+let FS_KUNAI_BLUE = 111;
+let FS_KUNAI_PURPLE = 112;
+let FS_KUNAI_WHITE = 113;
