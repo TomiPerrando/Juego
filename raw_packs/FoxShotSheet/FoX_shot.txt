@@ -1,0 +1,672 @@
+#UserShotData
+shot_image = "./FoxShotSheet.png"
+delay_rect = (128, 16, 160, 48)
+
+
+//-----BOLITAS PEQUEÑAS 1-8
+ShotData{ //ROJO
+	id=1
+	rect=(4, 4, 12, 12)
+	fixed_angle=true
+	delay_color=(250,106,10)
+	collision = 3
+}
+ShotData{ //NARANJA
+	id=2
+	rect=(20, 4, 28, 12)
+	fixed_angle=true
+	delay_color=(243,163,27)
+	collision = 3
+}
+ShotData{ //AMARILLO
+	id=3
+	rect=(36, 4, 44, 12)
+	fixed_angle=true
+	delay_color=(255,252,64)
+	collision = 3
+}
+ShotData{ //VERDE
+	id=4
+	rect=(52, 4, 60, 12)
+	fixed_angle=true
+	delay_color=(156,219,67)
+	collision = 3
+}
+ShotData{ //CELESTE
+	id=5
+	rect=(68, 4, 76, 12)
+	fixed_angle=true
+	delay_color=(166,252,219)
+	collision = 3
+}
+ShotData{ //AZUL
+	id=6
+	rect=(84, 4, 92, 12)
+	fixed_angle=true
+	delay_color=(40,92,196)
+	collision = 3
+}
+
+ShotData{ //PURPURA
+	id=7
+	rect=(100, 4, 108, 12)
+	fixed_angle=true
+	delay_color=(188,74,155)
+	collision = 3
+}
+ShotData{ //BLANCO
+	id=8
+	rect=(116, 4, 124, 12)
+	fixed_angle=true
+	delay_color=(255,255,255)
+	collision = 3
+}
+//-----BOLAS MEDIANAS 9-16 
+
+ShotData{ //ROJO
+	id=9
+	rect=(0, 16, 16, 32)
+	fixed_angle=true
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=10
+	rect=(16, 16, 32, 32)
+	fixed_angle=true
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=11
+	rect=(32, 16, 48, 32)
+	fixed_angle=true
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=12
+	rect=(48, 16, 64, 32)
+	fixed_angle=true
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=13
+	rect=(64, 16, 80, 32)
+	fixed_angle=true
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=14
+	rect=(80, 16, 96, 32)
+	fixed_angle=true
+	delay_color=(40,92,196)
+}
+ShotData{ //PURPURA
+	id=15
+	rect=(96, 16, 112, 32)
+	fixed_angle=true
+	delay_color=(188,74,155)
+}
+ShotData{ //BLANCO
+	id=16
+	rect=(112, 16, 128, 32)
+	fixed_angle=true
+	delay_color=(255,255,255)
+}
+//-----BOLAS MEDIANAS CON CENTRO 17-24 
+
+ShotData{ //ROJO
+	id=17
+	rect=(0, 32, 16, 48)
+	fixed_angle=true
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=18
+	rect=(16, 32, 32, 48)
+	fixed_angle=true
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=19
+	rect=(32, 32, 48, 48)
+	fixed_angle=true
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=20
+	rect=(48, 32, 64, 48)
+	fixed_angle=true
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=21
+	rect=(64, 32, 80, 48)
+	fixed_angle=true
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=22
+	rect=(80, 32, 96, 48)
+	fixed_angle=true
+	delay_color=(40,92,196)
+}
+ShotData{ //PURPURA
+	id=23
+	rect=(96, 32, 112, 48)
+	fixed_angle=true
+	delay_color=(188,74,155)
+}
+ShotData{ //BLANCO
+	id=24
+	rect=(112, 32, 128, 48)
+	fixed_angle=true
+	delay_color=(255,255,255)
+}
+
+//-----ARROZ 25-32
+
+ShotData{ //ROJO
+	id=25
+	rect=(1, 51, 6, 63)
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=26
+	rect=(8, 51, 13, 63)
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=27
+	rect=(15, 51, 20, 63)
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=28
+	rect=(22, 51, 27, 63)
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=29
+	rect=(29, 51, 35, 63)
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=30
+	rect=(36, 51, 41, 63)
+	delay_color=(40,92,196)
+}
+ShotData{ //MORADO
+	id=31
+	rect=(43, 51, 48, 63)
+	delay_color=(166,252,219)
+}
+ShotData{ //BLANCO
+	id=32
+	rect=(50, 51, 55, 63)
+	delay_color=(166,252,219)
+}
+//-----FLECHAS 33-40
+ShotData{ //ROJO
+	id=33
+	rect=(1, 65, 8, 77)
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=34
+	rect=(10, 65, 17, 77)
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=35
+	rect=(19, 65, 26, 77)
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=36
+	rect=(28, 65, 35, 77)
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=37
+	rect=(37, 65, 44, 77)
+	delay_color=(166,252,219)
+}
+ShotData{ //azul
+	id=38
+	rect=(46, 65, 53, 77)
+	delay_color=(40,92,196)
+}
+ShotData{ //purpura
+	id=39
+	rect=(55, 65, 62, 77)
+	delay_color=(188,74,155)
+}
+ShotData{ //blanco
+	id=40
+	rect=(64, 65, 71, 77)
+	delay_color=(255,255,255)
+}
+//-----ESPINAS 41-48
+
+ShotData{ //ROJO
+	id=41
+	rect=(1, 81, 14, 95)
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=42
+	rect=(16, 81, 29, 95)
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=43
+	rect=(31, 81, 44, 95)
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=44
+	rect=(46, 81, 59, 95)
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=45
+	rect=(61, 81, 74, 95)
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=46
+	rect=(76, 81, 89, 95)
+	delay_color=(40,92,196)
+}
+ShotData{ //PURPURA
+	id=47
+	rect=(91, 81, 104, 95)
+	delay_color=(188,74,155)
+}
+ShotData{ //BLANCO
+	id=48
+	rect=(106, 81, 119, 95)
+	delay_color=(255,255,255)
+}
+
+//-----ESTRELLAS 49-55
+ShotData{ //ROJO
+	id=49
+	angular_velocity=5
+	rect=(1, 97, 16, 112)
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=50
+	angular_velocity=5
+	rect=(18, 97, 33, 112)
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=51
+	angular_velocity=5
+	rect=(35, 97, 50, 112)
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=52
+	angular_velocity=5
+	rect=(52, 97, 67, 112)
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=53
+	angular_velocity=5
+	rect=(69, 97, 84, 112)
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=54
+	angular_velocity=5
+	rect=(86, 97, 101, 112)
+	delay_color=(40,92,196)
+}
+ShotData{ //PURPURA
+	id=55
+	angular_velocity=5
+	rect=(103, 97, 118, 112)
+	delay_color=(188,74,155)
+}
+ShotData{ //BLANCO
+	id=56
+	angular_velocity=5
+	rect=(120, 97, 135, 112)
+	delay_color=(255,255,255)
+}
+
+//-----BOLA DE FUEGO 57-64
+ShotData{ //ROJO
+	id=57
+	rect=(1, 113, 12, 130)
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=58
+	rect=(14, 113, 25, 130)
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=59
+	rect=(27, 113, 38, 130)
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=60
+	rect=(40, 113, 51, 130)
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=61
+	rect=(53, 113, 64, 130)
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=62
+	rect=(66, 113, 77, 130)
+	delay_color=(40,92,196)
+}
+ShotData{ //PURPURA
+	id=63
+	rect=(79, 113, 90, 130)
+	delay_color=(188,74,155)
+}
+ShotData{ //BLANCO
+	id=64
+	rect=(92, 113, 103, 130)
+	delay_color=(255,255,255)
+}
+
+//-----MINIBALAS 65-72
+
+ShotData{ //ROJO
+	id=65
+	rect=(1, 162, 6, 171)
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=66
+	rect=(8, 162, 13, 171)
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=67
+	rect=(15, 162, 20, 171)
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=68
+	rect=(22, 162, 27, 171)
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=69
+	rect=(29, 162, 34, 171)
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=70
+	rect=(36, 162, 41, 171)
+	delay_color=(40,92,196)
+}
+ShotData{ //PURPURA
+	id=71
+	rect=(43, 162, 48, 171)
+	delay_color=(188,74,155)
+}
+ShotData{ //BLANCO
+	id=72
+	rect=(50, 162, 55, 171)
+	delay_color=(255,255,255)
+}
+//-----BOLAS GRANDES (lol) 73-80 
+
+ShotData{ //ROJO
+	id=73
+	rect=(0, 176, 32, 208)
+	fixed_angle=true
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=74
+	rect=(32, 176, 64, 208)
+	fixed_angle=true
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=75
+	rect=(64, 176, 96, 208)
+	fixed_angle=true
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=76
+	rect=(96, 176, 128, 208)
+	fixed_angle=true
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=77
+	rect=(128, 176, 160, 208)
+	fixed_angle=true
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=78
+	rect=(160, 176, 192, 208)
+	fixed_angle=true
+	delay_color=(40,92,196)
+}
+ShotData{ //MORADO
+	id=79
+	rect=(192, 176, 224, 208)
+	fixed_angle=true
+	delay_color=(188,74,155)
+}
+ShotData{ //BLANCO
+	id=80
+	rect=(224, 176, 256, 208)
+	fixed_angle=true
+	delay_color=(255,255,255)
+}
+
+
+//----LASERS 81-89
+
+ShotData{ //ROJO
+	id=81
+	rect=(0, 144, 16, 160)
+}
+ShotData{ //NARANJA
+	id=82
+	rect=(16, 144, 32, 160)
+}
+ShotData{ //AMARILLO
+	id=83
+	rect=(32, 144, 48, 160)
+}
+ShotData{ //VERDE
+	id=84
+	rect=(48, 144, 64, 160)
+}
+ShotData{ //CELESTE
+	id=85
+	rect=(64, 144, 80, 160)
+}
+ShotData{ //AZUL
+	id=86
+	rect=(80, 144, 96, 160)
+}
+ShotData{ //MORADO
+	id=87
+	rect=(96, 144, 112, 160)
+}
+ShotData{ //BLANCO
+	id=88
+	rect=(112, 144, 128, 160)
+}
+ShotData{ //ARCOIRIS
+	id=89
+	rect=(128, 144, 144, 160)
+}
+
+//-----kunai con cadena (lmao) 90-97
+
+ShotData{ //ROJO
+	id=90
+	rect=(2, 209, 13, 239)
+	collision=(4,0,-9)
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=91
+	rect=(18, 209, 29, 239)
+	collision=(4,0,-9)
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=92
+	rect=(34, 209, 45, 239)
+	collision=(4,0,-9)
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=93
+	rect=(50, 209, 61, 239)
+	collision=(4,0,-9)
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=94
+	rect=(66, 209, 77, 239)
+	collision=(4,0,-9)
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=95
+	rect=(82, 209, 93, 239)
+	collision=(4,0,-9)
+	delay_color=(40,92,196)
+}
+ShotData{ //MORADO
+	id=96
+	rect=(98, 209, 109, 239)
+	collision=(4,0,-9)
+	delay_color=(188,74,155)
+}
+ShotData{ //BLANCO
+	id=97
+	rect=(114, 209, 125, 239)
+	collision=(4,0,-9)
+	delay_color=(255,255,255)
+}
+
+//-----BOLAS EXTRA GRANDES xddd 98-105
+
+ShotData{ //ROJO
+	id=98
+	rect=(176, 0, 240, 64)
+	fixed_angle=true
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=99
+	rect=(240, 0, 304, 64)
+	fixed_angle=true
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=100
+	rect=(304, 0, 368, 64)
+	fixed_angle=true
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=101
+	rect=(368, 0, 432, 64)
+	fixed_angle=true
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=102
+	rect=(432, 0, 496, 64)
+	fixed_angle=true
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=103
+	rect=(176, 64, 240, 128)
+	fixed_angle=true
+	delay_color=(40,92,196)
+}
+ShotData{ //MORADO
+	id=104
+	rect=(240, 64, 304, 128)
+	fixed_angle=true
+	delay_color=(188,74,155)
+}
+ShotData{ //BLANCO
+	id=105
+	rect=(304, 64, 368, 128)
+	fixed_angle=true
+	delay_color=(255,255,255)
+}
+
+//-----kunai con cadena (lmao) 106-113
+
+ShotData{ //ROJO
+	id=106
+	rect=(0, 240, 9, 256)
+	collision=(4,0,-9)
+	delay_color=(250,106,10)
+}
+ShotData{ //NARANJA
+	id=107
+	rect=(16, 240, 25, 256)
+	collision=(4,0,2)
+	delay_color=(243,163,27)
+}
+ShotData{ //AMARILLO
+	id=108
+	rect=(32, 240, 44, 256)
+	collision=(4,0,2)
+	delay_color=(255,252,64)
+}
+ShotData{ //VERDE
+	id=109
+	rect=(48, 240, 57, 256)
+	collision=(4,0,2)
+	delay_color=(156,219,67)
+}
+ShotData{ //CELESTE
+	id=110
+	rect=(64, 240, 73, 256)
+	collision=(4,0,2)
+	delay_color=(166,252,219)
+}
+ShotData{ //AZUL
+	id=111
+	rect=(80, 240, 89, 256)
+	collision=(4,0,2)
+	delay_color=(40,92,196)
+}
+ShotData{ //MORADO
+	id=112
+	rect=(96, 240, 105, 256)
+	collision=(4,0,2)
+	delay_color=(188,74,155)
+}
+ShotData{ //BLANCO
+	id=113
+	rect=(112, 240, 121, 256)
+	collision=(4,0,2)
+	delay_color=(255,255,255)
+}
+
+
+
+
+

@@ -9,11 +9,99 @@ scale = 4.5
 print("================Iniciando juego================")    
 
 local GAMEPAD_DEADZONE = 0.25
+local DEBUG_TIME_SCALE = 1.0
+local DASH_DURATION = 0.12
+local DASH_SPEED = 750
+local DASH_COOLDOWN = 0.45
+local DASH_DUST_FRAME_SIZE = 128
+local DASH_DUST_FRAME_TIME = 0.04
+local DASH_DUST_SCALE = 0.45
+local dashDustImage = nil
+local dashDustQuads = {}
+local dashDustEffects = {}
 
 local function applyDeadzone(value)
     value = value or 0
     if math.abs(value) < GAMEPAD_DEADZONE then return 0 end
     return value
+end
+
+local function loadDashDustEffects()
+    dashDustImage = love.graphics.newImage("sprites/effects/dash_dust_vfx2.png")
+    dashDustQuads = {}
+
+    for i = 0, 4 do
+        table.insert(
+            dashDustQuads,
+            love.graphics.newQuad(
+                i * DASH_DUST_FRAME_SIZE,
+                0,
+                DASH_DUST_FRAME_SIZE,
+                DASH_DUST_FRAME_SIZE,
+                dashDustImage:getWidth(),
+                dashDustImage:getHeight()))
+    end
+end
+
+local function spawnDashDustEffect(player, angle)
+    if not dashDustImage then return end
+
+    table.insert(dashDustEffects, {
+        x = player.x - math.cos(angle) * 10,
+        y = player.y + (18 * scale) / 2,
+        timer = 0
+    })
+end
+
+local function updateDashDustEffects(dt)
+    for i = #dashDustEffects, 1, -1 do
+        local effect = dashDustEffects[i]
+        effect.timer = effect.timer + dt
+
+        if effect.timer >= #dashDustQuads * DASH_DUST_FRAME_TIME then
+            table.remove(dashDustEffects, i)
+        end
+    end
+end
+
+local function drawDashDustEffects()
+    if not dashDustImage then return end
+
+    for _, effect in ipairs(dashDustEffects) do
+        local frame = math.floor(effect.timer / DASH_DUST_FRAME_TIME) + 1
+        frame = math.min(frame, #dashDustQuads)
+
+        love.graphics.draw(
+            dashDustImage,
+            dashDustQuads[frame],
+            effect.x,
+            effect.y,
+            nil,
+            DASH_DUST_SCALE,
+            DASH_DUST_SCALE,
+            DASH_DUST_FRAME_SIZE / 2,
+            DASH_DUST_FRAME_SIZE / 2)
+    end
+end
+
+local function updateDash(player, dt, dashPressed, moveX, moveY)
+    player.dashCooldownTimer = math.max(0, (player.dashCooldownTimer or 0) - dt)
+
+    if dashPressed and not player.wasDashPressed and player.dashCooldownTimer <= 0 then
+        local moveLength = math.sqrt(moveX^2 + moveY^2)
+        player.dashAngle = moveLength > 0 and math.atan2(moveY, moveX) or getAttackAngle(player)
+        player.dashTime = DASH_DURATION
+        player.dashCooldownTimer = DASH_COOLDOWN
+        spawnDashDustEffect(player, player.dashAngle)
+    end
+    player.wasDashPressed = dashPressed
+
+    if player.dashTime and player.dashTime > 0 then
+        player.dashTime = math.max(0, player.dashTime - dt)
+        return math.cos(player.dashAngle) * DASH_SPEED, math.sin(player.dashAngle) * DASH_SPEED, true
+    end
+
+    return moveX, moveY, false
 end
 
 local function getPlayer2Gamepad()
@@ -43,12 +131,51 @@ local function drawHPBar(x, y, w, h, hp, hpMax)
     love.graphics.setColor(1,1,1)  -- reset
 end
 
+local function updateAttackFacing(player, dt)
+    if not player.attackFacingTime or player.attackFacingTime <= 0 then return end
+
+    player.attackFacingTime = player.attackFacingTime - dt
+    if player.attackAnim then
+        player.anim = player.attackAnim
+    end
+end
+
+----
+-- Placeholder visual de ataque: lunge del sprite
+-- No mueve el collider. Reemplazar cuando haya animaciones reales de ataque.
+----
+
+local function updateAttackVisual(player, dt)
+    if not player.attackVisualTimer or player.attackVisualTimer <= 0 then return end
+
+    player.attackVisualTimer = math.max(0, player.attackVisualTimer - dt)
+end
+
+local function getAttackDrawOffset(player)
+    if not player.attackVisualTimer or player.attackVisualTimer <= 0 then
+        return 0, 0
+    end
+
+    local progress = 1 - (player.attackVisualTimer / player.attackVisualDuration)
+    local amount = 0
+    if progress < 0.4 then
+        amount = player.attackVisualDistance * (progress / 0.4)
+    else
+        amount = player.attackVisualDistance * (1 - ((progress - 0.4) / 0.6))
+    end
+
+    return math.cos(player.attackVisualAngle) * amount, math.sin(player.attackVisualAngle) * amount
+end
+
 function love.load()
 
     -------- Configs --------
 
     love.graphics.setDefaultFilter("nearest", "nearest") -- No suavizar imagenes
     gameMap = sti('maps/base_arena.lua')                 -- Carga el mapa
+    Enemies.load()
+    Weapons.load()
+    loadDashDustEffects()
 
     -------- Physics  --------
 
@@ -95,6 +222,10 @@ function love.load()
     player1.collider:setFixedRotation(true)
     player1.collider.identity = "player1"
     player1.attackTime = 0
+    player1.canAttack = true
+    player1.dashTime = 0
+    player1.dashCooldownTimer = 0
+    player1.wasDashPressed = false
 
 
     ---- player2 ----
@@ -123,6 +254,10 @@ function love.load()
     player2.collider:setFixedRotation(true)
     player2.collider.identity = "player2"
     player2.attackTime = 0
+    player2.canAttack = true
+    player2.dashTime = 0
+    player2.dashCooldownTimer = 0
+    player2.wasDashPressed = false
 
     ---- player1 Functions----
 
@@ -137,9 +272,10 @@ function love.load()
 
     ---- Starting Enemies ----
 
-    Enemies.spawn("dummy", 1000, 400, world)
+    Enemies.spawn("dummy", 1000, 400, world,2)
 
 function love.update(dt)
+    dt = dt * DEBUG_TIME_SCALE
 
     -------- player1 Movement --------
      
@@ -177,6 +313,12 @@ function love.update(dt)
         vy = (vy / len) * player1.speed
     end
 
+    local player1IsDashing
+    vx, vy, player1IsDashing = updateDash(player1, dt, love.keyboard.isDown("space"), vx, vy)
+    if player1IsDashing then
+        isMoving = true
+    end
+
     ---- Collider-based movement ----
 
     player1.collider:setLinearVelocity(vx, vy)   
@@ -187,6 +329,8 @@ function love.update(dt)
     if not isMoving then
         player1.anim:gotoFrame(2)
     end
+    updateAttackFacing(player1, dt)
+    updateAttackVisual(player1, dt)
 
 
     -------- player2 Movement --------
@@ -252,6 +396,13 @@ function love.update(dt)
         vy = (vy / len) * player2.speed
     end
 
+    local player2DashPressed = love.keyboard.isDown("rshift") or (gamepad and gamepad:isGamepadDown("b"))
+    local player2IsDashing
+    vx, vy, player2IsDashing = updateDash(player2, dt, player2DashPressed, vx, vy)
+    if player2IsDashing then
+        isMoving = true
+    end
+
     ---- Collider-based movement ----
 
     player2.collider:setLinearVelocity(vx, vy)   
@@ -262,6 +413,8 @@ function love.update(dt)
     if not isMoving then
         player2.anim:gotoFrame(2)
     end
+    updateAttackFacing(player2, dt)
+    updateAttackVisual(player2, dt)
 
 
     -------- player1 Attack --------
@@ -345,6 +498,8 @@ function love.update(dt)
 
     Weapons.update(dt)
     world:update(dt)
+    Enemies.update(dt)
+    updateDashDustEffects(dt)
     
     player1.anim:update(dt)
     player2.anim:update(dt)
@@ -372,19 +527,29 @@ function love.draw()
     -------- Map --------
     gameMap:draw()
 
+    -------- Weapons --------
+    Weapons.draw()
+
+    -------- Dash Dust --------
+    drawDashDustEffects()
+
     -------- player1 --------
+    -- Placeholder visual: offset temporal del sprite durante el ataque.
+    local player1DrawOffsetX, player1DrawOffsetY = getAttackDrawOffset(player1)
     player1.anim:draw(                -- sprite/animación
         player1.spriteSheet,
-        player1.x, player1.y,
+        player1.x + player1DrawOffsetX, player1.y + player1DrawOffsetY,
         nil,                         -- rot
         scale,                       -- escala
         nil,
         6, 9)                        -- offsets
 
             -------- player2 --------
+    -- Placeholder visual: offset temporal del sprite durante el ataque.
+    local player2DrawOffsetX, player2DrawOffsetY = getAttackDrawOffset(player2)
     player2.anim:draw(                -- sprite/animación
         player2.spriteSheet,
-        player2.x, player2.y,
+        player2.x + player2DrawOffsetX, player2.y + player2DrawOffsetY,
         nil,                         -- rot
         scale,                       -- escala
         nil,
@@ -402,26 +567,20 @@ function love.draw()
     -------- Enemies --------
     for _, enemy in ipairs(Enemies.list) do
 
-        ---- Cuerpo (placeholder en rojo) ----
-        local cx, cy = enemy.collider:getPosition()
-        love.graphics.setColor(0.8, 0.1, 0.1)
-        love.graphics.rectangle('fill',
-            cx - enemy.width / 2,
-            cy - enemy.height / 2,
-            enemy.width,
-            enemy.height)
-        love.graphics.setColor(1, 1, 1)
+        local cx, cy = Enemies.getDrawPosition(enemy)
+        Enemies.draw(enemy)
 
         ---- Barra de vida ----
+        local barWidth = enemy.spriteWidth or enemy.width
+        local barHeight = enemy.spriteHeight or enemy.height
         drawHPBar(
-            cx - enemy.width / 2,
-            cy - enemy.height / 2 - 10,
-            enemy.width,
+            cx - barWidth / 2,
+            cy - barHeight / 2 - 10,
+            barWidth,
             4,
             enemy.current_hp,
             enemy.hp)
     end
-
 
     -------- Debug (colliders) --------
     world:draw() -- quitá o comenta esto cuando no haga falta
