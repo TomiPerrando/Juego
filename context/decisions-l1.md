@@ -1,6 +1,6 @@
 # Decisions (L1)
 
-Last updated: 2026-07-08
+Last updated: 2026-07-11
 
 - [2026-07-08] Usar LOVE2D como framework principal y Lua como lenguaje.
 - [2026-07-08] Disenar el juego desde el inicio alrededor de dos jugadores cooperando, no como un modo agregado al final.
@@ -17,6 +17,11 @@ Last updated: 2026-07-08
 - [2026-07-08] Hacer una revision general antes de la siguiente etapa de implementacion.
 - [2026-07-08] Refinar espada, escudo y rifle antes de agregar nuevos tipos de ataques o armas.
 - [2026-07-08] Confirmar `rifle` como nombre oficial del arma; `pistola` fue alias/confusion previa.
+- [2026-07-10] Usar `Shield 4` del shield pack como sprite visual del escudo tanto para ataques como para bloqueos. Falta resolver una variante visual desde atras para cuando el personaje mira hacia arriba.
+- [2026-07-10] Usar el beholder de `Tiny Enemies Vol1` como enemigo estacionario de prueba que dispara proyectiles en direccion fija para validar el bloqueo del escudo.
+- [2026-07-10] El escudo solo refleja proyectiles aliados por ahora; cuando bloquea proyectiles enemigos, esos proyectiles se rompen.
+- [2026-07-10] El escudo puede ejecutar un contraataque potente de barrido justo despues de bloquear un proyectil enemigo. Los parries quedan diferidos para mas adelante.
+- [2026-07-11] El dash no debe ser necesariamente un boton generico igual para todas las armas. Puede formar parte del kit de cada arma, con peculiaridades adaptadas a su estilo; por ejemplo, el escudo puede modificar el dash hacia una accion defensiva/de control.
 
 ## Rationale
 

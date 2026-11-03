@@ -1,6 +1,6 @@
 # Project Context (L0)
 
-Last updated: 2026-07-08
+Last updated: 2026-07-11
 
 L1 files by section:
 - General Context: `context/general-context-l1.md`
@@ -19,11 +19,11 @@ Juego 2D top-down action RPG cooperativo local para dos jugadores en una misma P
 
 ## Latest Decisions (max 5)
 
-- [2026-07-08] Acotar el alcance actual a cooperativo local en una PC, sin online por ahora.
-- [2026-07-08] Usar camara compartida para ambos jugadores.
-- [2026-07-08] Usar arenas/salas de dungeon como formato principal: entrar, vencer enemigos y pasar a la siguiente sala.
-- [2026-07-08] Basar el moveset en el arma equipada; los jugadores no quedan limitados a un rol fijo.
-- [2026-07-08] Confirmar `rifle` como nombre oficial del arma; `pistola` fue alias/confusion previa.
+- [2026-07-10] Usar `Shield 4` del shield pack como sprite del escudo para ataques y bloqueos; la vista desde atras queda pendiente.
+- [2026-07-10] Usar el beholder de `Tiny Enemies Vol1` como enemigo estacionario de prueba para validar bloqueo del escudo.
+- [2026-07-10] El escudo solo refleja proyectiles aliados por ahora; proyectiles enemigos bloqueados se rompen.
+- [2026-07-10] El escudo puede contraatacar con un barrido potente justo despues de bloquear un proyectil enemigo; parries quedan para despues.
+- [2026-07-11] El dash no debe ser necesariamente generico: puede formar parte del kit de cada arma con variantes propias.
 
 ## Current Scope
 
